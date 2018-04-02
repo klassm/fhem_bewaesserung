@@ -80,7 +80,7 @@ const getCsrfToken = function () {
     let value = device[key] ? device[key] : "";
 
     const options = values.map(v => {
-      const isSelected = v === value;
+      const isSelected = v.name === value;
       return `<option ${isSelected ? "selected" : ""} value="${v.name}">${v.alias}</option>`
     }).reduce((a, b) => a + b, "");
 

@@ -32,8 +32,13 @@ const getCsrfToken = function () {
           const sets = device['PossibleSets'];
           return sets.includes("on") && sets.includes("off");
         })
-        .map(device => device['Name'])
-        .filter(name => name !== bewaesserungDevice));
+        .map((device) => {
+          return {
+            name: device['Name'],
+            alias: device['Attributes']['alias'] || device['Name']
+          };
+        })
+        .filter(name => name.name !== bewaesserungDevice));
     });
   },
   toDevices = function (def) {
@@ -76,7 +81,7 @@ const getCsrfToken = function () {
 
     const options = values.map(v => {
       const isSelected = v === value;
-      return `<option ${isSelected ? "selected" : ""}>${v}</option>`
+      return `<option ${isSelected ? "selected" : ""} value="${v.name}">${v.alias}</option>`
     }).reduce((a, b) => a + b, "");
 
     return $("<div><label for='" + key + "'>" + desc + "</label>" +

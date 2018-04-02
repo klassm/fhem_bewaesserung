@@ -30,7 +30,7 @@ const getCsrfToken = function () {
       callback(data['Results']
         .filter(device => {
           const sets = device['PossibleSets'];
-          return sets.contains("on") && sets.contains("off");
+          return sets.includes("on") && sets.includes("off");
         })
         .map(device => device['Name'])
         .filter(name => name !== bewaesserungDevice));

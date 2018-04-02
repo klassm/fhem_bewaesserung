@@ -97,7 +97,7 @@ var bewaesserungDevice = undefined,
 
     edit.empty();
     edit.append(closeLink);
-    edit.append("<h4>" + (device['identifier'] ? device['identifier'] : 'Hinzufügen') + "</h4>");
+    edit.append("<h4>" + (device['name'] ? device['name'] : 'Hinzufügen') + "</h4>");
     edit.append(form);
 
     form.append(inputElement(device, 'identifier', 'Ident', true));

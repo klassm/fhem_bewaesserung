@@ -1,17 +1,19 @@
-var bewaesserungDevice = undefined,
-  getCsrfToken = function () {
-    var req = new XMLHttpRequest();
+let bewaesserungDevice = undefined,
+  bewaesserungRoom = undefined;
+
+const getCsrfToken = function () {
+    const req = new XMLHttpRequest();
     req.open('GET', document.location, false);
     req.send(null);
-    var headers = req.getAllResponseHeaders().toLowerCase();
+    const headers = req.getAllResponseHeaders().toLowerCase();
     return (/x-fhem-csrftoken: ([a-z]+_[0-9a-z]+)/g).exec(headers)[1]
   },
 
   load = function () {
-    var token = getCsrfToken();
+    const token = getCsrfToken();
     console.log("BEWAE - load() - token=" + token);
     loadJsonList(bewaesserungDevice, token, function (result) {
-      var keyValuePairs = toDevices(result);
+      const keyValuePairs = toDevices(result);
       console.log("BEWAE - devices is" + JSON.stringify(keyValuePairs));
       fillContent(keyValuePairs, token);
     });
@@ -22,17 +24,29 @@ var bewaesserungDevice = undefined,
       callback(data['ResultSet']['Results']['READINGS']);
     });
   },
+  getDevicesInRoom = function (device, token, callback) {
+    console.log("BEWAE - loadDevicesInRoom()");
+    $.getJSON('?cmd=jsonlist2%20room=' + bewaesserungRoom + '&XHR=1&&fwcsrf=' + token, function (data) {
+      callback(data['Results']
+        .filter(device => {
+          const sets = device['PossibleSets'];
+          return sets.contains("on") && sets.contains("off");
+        })
+        .map(device => device['Name'])
+        .filter(name => name !== bewaesserungDevice));
+    });
+  },
   toDevices = function (def) {
     if (!def) {
       return [];
     }
-    var keys = Object.keys(def);
+    const keys = Object.keys(def);
     return keys.filter(function (key) {
       return key !== 'null' && key.startsWith(".");
     }).map(function (key) {
       try {
-        var json = def[key]["VAL"];
-        var device = JSON.parse(json);
+        const json = def[key]["VAL"];
+        const device = JSON.parse(json);
         device['delay'] = device['delay'] || 0;
         if (device && !device['identifier']) {
           device['identifier'] = device['deviceName'];
@@ -46,19 +60,35 @@ var bewaesserungDevice = undefined,
       return el
     });
   },
+
   inputElement = function (device, key, desc, disabled, defaultValue) {
     defaultValue = defaultValue || "";
-    var value = device[key] ? device[key] : "",
-      disabledAttribute = disabled ? 'disabled' : '';
+    let value = device[key] ? device[key] : "";
+    const disabledAttribute = disabled ? 'disabled' : '';
     value = value || defaultValue;
 
     return $("<div><label for='" + key + "'>" + desc + "</label>" +
       "<input name='" + key + "' value='" + value + "' " + disabledAttribute + "/></div>");
   },
+
+  dropDownWith = function (device, key, desc, values) {
+    let value = device[key] ? device[key] : "";
+    const disabledAttribute = disabled ? 'disabled' : '';
+    value = value || defaultValue;
+
+    const options = values.map(v => {
+      const isSelected = v === value;
+      return `<option ${isSelected ? "selected" : ""}>${v}</option>`
+    }).reduce((a, b) => a + b, "");
+
+    return $("<div><label for='" + key + "'>" + desc + "</label>" +
+      ` <select name='${key}'>${options}</select></div>`)
+  },
+
   submitButton = function (token) {
-    var submit = $("<button>Submit</button>");
+    const submit = $("<button>Submit</button>");
     submit.click(function () {
-      var form = $('#BEWAE').find('form'),
+      const form = $('#BEWAE').find('form'),
         identifier = form.find("[name='identifier']").val(),
         deviceName = form.find("[name='deviceName']").val(),
         weekDays = form.find("[name='weekdays']").val(),
@@ -91,33 +121,35 @@ var bewaesserungDevice = undefined,
   },
 
   editDevice = function (device, token) {
-    var edit = $("#BEWAE").find('.edit'),
-      form = $("<form></form>"),
-      closeLink = $("<a class='close'>[close]</a>");
+    getDevicesInRoom(device, token, (devices => {
+      const edit = $("#BEWAE").find('.edit'),
+        form = $("<form></form>"),
+        closeLink = $("<a class='close'>[close]</a>");
 
-    edit.empty();
-    edit.append(closeLink);
-    edit.append("<h4>" + (device['name'] ? device['name'] : 'Hinzufügen') + "</h4>");
-    edit.append(form);
+      edit.empty();
+      edit.append(closeLink);
+      edit.append("<h4>" + (device['name'] ? device['name'] : 'Hinzufügen') + "</h4>");
+      edit.append(form);
 
-    form.append(inputElement(device, 'identifier', 'Ident', true));
-    form.append(inputElement(device, 'deviceName', 'Gerät', false));
-    form.append(inputElement(device, 'weekdays', 'Wochentage', false));
-    form.append(inputElement(device, 'switchTime', 'Uhrzeit', false));
-    form.append(inputElement(device, 'duration', 'Dauer (s)', false));
-    form.append(inputElement(device, 'delay', 'Verzögerung (s)', false, 0));
-    form.append(inputElement(device, 'before', 'Vorab', false, ""));
-    form.append(inputElement(device, 'after', 'Anschließend', false, ""));
+      form.append(inputElement(device, 'identifier', 'Ident', true));
+      form.append(dropDownWith(device, 'deviceName', 'Gerät', devices));
+      form.append(inputElement(device, 'weekdays', 'Wochentage', false));
+      form.append(inputElement(device, 'switchTime', 'Uhrzeit', false));
+      form.append(inputElement(device, 'duration', 'Dauer (s)', false));
+      form.append(inputElement(device, 'delay', 'Verzögerung (s)', false, 0));
+      form.append(inputElement(device, 'before', 'Vorab', false, ""));
+      form.append(inputElement(device, 'after', 'Anschließend', false, ""));
 
-    form.append(submitButton(token));
-    closeLink.click(function () {
-      edit.hide();
-    });
-    edit.show();
+      form.append(submitButton(token));
+      closeLink.click(function () {
+        edit.hide();
+      });
+      edit.show();
+    }));
   },
   toRow = function (device, token) {
-    var editLink = $("<a>Aendern</a>");
-    var row = $("<tr>" +
+    const editLink = $("<a>Aendern</a>");
+    const row = $("<tr>" +
       "<td>" + device['identifier'] + "</td>" +
       "<td>" + device['deviceName'] + "</td>" +
       "<td>" + device['weekdays'] + "</td>" +
@@ -134,7 +166,7 @@ var bewaesserungDevice = undefined,
   },
   fillContent = function (devices, token) {
     console.log("fillContent");
-    var table = $("<table/>"),
+    const table = $("<table/>"),
       tbody = $("<tbody/>"),
       newDevice = $("<a>Hinzufügen</a>");
     table.append("<thead>" +
@@ -149,15 +181,16 @@ var bewaesserungDevice = undefined,
       "</thead>");
     table.append(tbody);
     console.log("fillContent - device count is #" + devices.length);
-    devices.map(function (el) {
-      return toRow(el, token)
-    })
+    devices
+      .map(function (el) {
+        return toRow(el, token)
+      })
       .forEach(function (el) {
         tbody.append(el);
       });
-    var div = $("#BEWAE");
+    const div = $("#BEWAE");
     div.empty();
-    var edit = $("<div class='edit'/>");
+    const edit = $("<div class='edit'/>");
     edit.hide();
     div.append(edit);
     div.append(table);
@@ -171,13 +204,13 @@ var bewaesserungDevice = undefined,
   },
   uuidv4 = function () {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
       return v.toString(16);
     });
   };
 
-
-function bewaesserung_load_complete(device) {
+function bewaesserung_load_complete(device, room) {
   bewaesserungDevice = device;
+  bewaesserungRoom = room;
   load();
 }

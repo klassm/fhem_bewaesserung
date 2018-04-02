@@ -78,8 +78,9 @@ BEWAE_detailFn($$$$) {
     my ($FW_wname, $d, $room, $pageHash) = @_;
     my $hash = $defs{$d};
     my $name = $hash->{NAME};
+    my $room = $hash->{ATTRIBUTES}->{ROOM};
     return "<div><div id=\"BEWAE\"/></div>"
-        ."<script>\$.getScript('fhem/BEWAE/bewae.js', function() { bewaesserung_load_complete(\"$name\");});"
+        ."<script>\$.getScript('fhem/BEWAE/bewae.js', function() { bewaesserung_load_complete(\"$name\", \"$room\");});"
         ."\$('<link>').appendTo('head').attr({type : 'text/css', rel : 'stylesheet'}).attr('href', 'fhem/BEWAE/bewae.css');"
         ."</script></div>";
 }

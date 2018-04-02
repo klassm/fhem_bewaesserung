@@ -85,14 +85,14 @@ BEWAE_detailFn($$$$) {
 }
 
 sub BEWAE_getDevices($) {
-    my (%hash) = @_;
+    my ($hash) = @_;
 
     my $key;
     my $value;
     my @result = ();
-    return @result if $hash{READINGS} == undef;
+    return @result if $hash->{READINGS} == undef;
 
-    my %readings = $hash{READINGS};
+    my %readings = $hash->{READINGS};
     while ( ($key, $value) = each %readings ) {
         if ($key =~ /\..*/) {
             Log 2, "add $key";
@@ -105,9 +105,10 @@ sub BEWAE_getDevices($) {
 
 sub
 BEWAE_Set {
-    my (%hash, @a) = @_;
+    my ($hash, @a) = @_;
     my $name = shift @a;
     my $modifier = shift @a;
+    Log 2, "BEWAE_Set(name=$name, modifier=$modifier)";
 
     if ($modifier eq "modify") {
         Log 2, join( " ", @a );
@@ -144,7 +145,7 @@ BEWAE_Set {
         $device->{before} = $before;
         $device->{after} = $after;
         $device->{delay} = $delay;
-        BEWAE_saveDevice( %hash, $identifier, $device );
+        BEWAE_saveDevice( $hash, $identifier, $device );
 
         fhem "delete $timerName";
 
@@ -162,21 +163,21 @@ BEWAE_Set {
         $target = "enable" if $modifier eq "on";
         $targetState = "yes" if $modifier eq "on";
 
-        my @devices = BEWAE_getDevices( %hash );
-        my %deliberateDisabled = BEWAE_getDeliberateDisabledDevices(%hash);
+        my @devices = BEWAE_getDevices( $hash );
+        my %deliberateDisabled = BEWAE_getDeliberateDisabledDevices($hash);
         foreach(@devices) {
-            my %device = BEWAE_getDevice( %hash, $_ );
+            my %device = BEWAE_getDevice( $hash, $_ );
             if ($deliberateDisabled{$device{identifier}} == undef) {
                 $device{enabled} = $targetState;
                 fhem "set $device{timerName} $target";
-                BEWAE_saveDevice( %hash, $_, %device );
+                BEWAE_saveDevice( $hash, $_, %device );
             }
         }
-        $hash{STATE} = $modifier;
+        $hash->{STATE} = $modifier;
         return "ok in $name";
     }
     if (int( @a ) == 1) {
-        my $switchHash = BEWAE_getDevice( %hash, $modifier );
+        my $switchHash = BEWAE_getDevice( $hash, $modifier );
         my $identifier = $modifier;
         return "cannot find device $identifier" if not defined $switchHash;
         return "invalid command, must add task" if int( @a ) != 1;
@@ -191,15 +192,15 @@ BEWAE_Set {
         if ($task eq "enable") {
             fhem "set $switchHash->{timerName} enable";
             $switchHash->{enabled} = "yes";
-            BEWAE_saveDevice( %hash, $identifier, $switchHash );
-            BEWAE_updateDeliberateDisabledReading( %hash, $identifier, $switchHash );
+            BEWAE_saveDevice( $hash, $identifier, $switchHash );
+            BEWAE_updateDeliberateDisabledReading( $hash, $identifier, $switchHash );
             return "enabled $identifier in $name";
         }
         if ($task eq "disable") {
             fhem "set $switchHash->{timerName} disable";
             $switchHash->{enabled} = "no";
-            BEWAE_saveDevice( %hash, $identifier, $switchHash );
-            BEWAE_updateDeliberateDisabledReading( %hash, $identifier, $switchHash );
+            BEWAE_saveDevice( $hash, $identifier, $switchHash );
+            BEWAE_updateDeliberateDisabledReading( $hash, $identifier, $switchHash );
             return "disabled $identifier in $name";
         }
     }
@@ -207,7 +208,7 @@ BEWAE_Set {
     my $states = "enable,disable,delete";
     my @deviceSpecific = ();
 
-    my @devices = BEWAE_getDevices( %hash );
+    my @devices = BEWAE_getDevices( $hash );
     foreach(@devices) {
         push ( @deviceSpecific, "$_:$states" );
     }

@@ -153,7 +153,6 @@ const getCsrfToken = function () {
   toRow = function (device, token) {
     const editLink = $("<a>Aendern</a>");
     const row = $("<tr>" +
-      "<td>" + device['identifier'] + "</td>" +
       "<td>" + device['deviceName'] + "</td>" +
       "<td>" + device['weekdays'] + "</td>" +
       "<td>" + device['switchTime'] + "</td>" +
@@ -173,7 +172,6 @@ const getCsrfToken = function () {
       tbody = $("<tbody/>"),
       newDevice = $("<a>Hinzufügen</a>");
     table.append("<thead>" +
-      "<th>Ident</th>" +
       "<th>Name</th>" +
       "<th>Wochentage</th>" +
       "<th>Zeit</th>" +

@@ -1,0 +1,29 @@
+body {
+}
+
+#BEWAE .edit {
+    background-color: silver;
+    width: 400px;
+    display: none;
+    position: absolute;
+    padding: 10px;
+}
+
+#BEWAE .edit label {
+    width: 140px;
+    display: inline-block;
+}
+
+#BEWAE .edit a.close {
+    float: right;
+    font-size: 0.8em;
+}
+
+#BEWAE .edit a.close {
+    float: right;
+    font-size: 0.8em;
+}
+#BEWAE .edit h4 {
+    padding: 0;
+    margin: 0 0 1em;
+}

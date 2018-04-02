@@ -213,7 +213,7 @@ BEWAE_Set {
     }
     my $deviceSpecificSetList = join( " ", @deviceSpecific );
     Log 2, $deviceSpecificSetList;
-    return "unknown set value, choose one of on off modify $deviceSpecificSetList";
+    return "unknown set value $modifier, choose one of on off modify $deviceSpecificSetList";
 }
 
 sub

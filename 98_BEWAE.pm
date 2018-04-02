@@ -78,7 +78,7 @@ BEWAE_detailFn($$$$) {
     my ($FW_wname, $d, $room, $pageHash) = @_;
     my $hash = $defs{$d};
     my $name = $hash->{NAME};
-    my $room = $hash->{ATTRIBUTES}->{room};
+    my $room = $hash->{ATTRIBUTES}->{room} // "";
     return "<div><div id=\"BEWAE\"/></div>"
         ."<script>\$.getScript('fhem/BEWAE/bewae.js', function() { bewaesserung_load_complete(\"$name\", \"$room\");});"
         ."\$('<link>').appendTo('head').attr({type : 'text/css', rel : 'stylesheet'}).attr('href', 'fhem/BEWAE/bewae.css');"
@@ -91,10 +91,10 @@ sub BEWAE_getDevices($) {
     my $key;
     my $value;
     my @result = ();
-    return @result if $hash->{READINGS} == undef;
+    return @result if not defined $hash->{READINGS};
 
-    my %readings = $hash->{READINGS};
-    while ( ($key, $value) = each %readings ) {
+    my $readings = $hash->{READINGS};
+    while ( ($key, $value) = each %{$readings} ) {
         if ($key =~ /\..*/) {
             Log 2, "add $key";
             $key =~ s/\.//g;

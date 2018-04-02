@@ -14,6 +14,6 @@ if [ ! -d "${FHEM_DIR}" ]; then
   exit 2
 fi
 
-ln -s "${DIR}/98_BEWAE.pm" "${FHEM_DIR}/FHEM/98_BEWAE.pm"
-ln -s "${DIR}/web" "${FHEM_DIR}/www/BEWAE"
+ln -fs "${DIR}/98_BEWAE.pm" "${FHEM_DIR}/FHEM/98_BEWAE.pm"
+ln -fs "${DIR}/web" "${FHEM_DIR}/www/BEWAE"
 

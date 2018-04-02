@@ -73,8 +73,6 @@ const getCsrfToken = function () {
 
   dropDownWith = function (device, key, desc, values) {
     let value = device[key] ? device[key] : "";
-    const disabledAttribute = disabled ? 'disabled' : '';
-    value = value || defaultValue;
 
     const options = values.map(v => {
       const isSelected = v === value;

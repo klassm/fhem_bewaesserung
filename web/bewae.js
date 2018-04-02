@@ -134,7 +134,7 @@ const getCsrfToken = function () {
       edit.append("<h4>" + (device['name'] ? device['name'] : 'Hinzufügen') + "</h4>");
       edit.append(form);
 
-      form.append(inputElement(device, 'identifier', 'Ident', true));
+      form.append(inputElement(device, 'identifier', 'Ident', false));
       form.append(dropDownWith(device, 'deviceName', 'Gerät', devices));
       form.append(inputElement(device, 'weekdays', 'Wochentage', false));
       form.append(inputElement(device, 'switchTime', 'Uhrzeit', false));
@@ -198,16 +198,8 @@ const getCsrfToken = function () {
     div.append(newDevice);
 
     newDevice.click(function () {
-      editDevice({
-        identifier: uuidv4()
-      }, token);
+      editDevice({}, token);
     })
-  },
-  uuidv4 = function () {
-    return 'xxxxxxxx_xxxx_4xxx_yxxx_xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
   };
 
 function bewaesserung_load_complete(device, room) {

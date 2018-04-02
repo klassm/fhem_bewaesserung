@@ -28,7 +28,3 @@ body {
     padding: 0;
     margin: 0 0 1em;
 }
-
-#BEWAE label[for=identifier] {
-    display: none;
-}

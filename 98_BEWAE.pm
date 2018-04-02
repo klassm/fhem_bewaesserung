@@ -229,8 +229,6 @@ BEWAE_updateReading($$) {
     my $enabled = $device->{enabled};
     my $deviceName = $device->{deviceName};
 
-    $identifier = $deviceName if $identifier == undef;
-
     my $state = "${deviceName} ${weekdays} ${switchTime} ${duration}";
     if ($enabled eq "no") {
         $state = "$state disabled";

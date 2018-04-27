@@ -167,12 +167,12 @@ BEWAE_Set {
         my @devices = BEWAE_getDevices( $hash );
         my %deliberateDisabled = BEWAE_getDeliberateDisabledDevices($hash);
         foreach(@devices) {
-            my %device = BEWAE_getDevice( $hash, $_ );
-            if ($deliberateDisabled{$device{identifier}} == undef) {
-                $device{enabled} = $targetState;
-                fhem "set $device{timerName} $target";
-                BEWAE_saveDevice( $hash, $_, %device );
-            }
+           my $device = BEWAE_getDevice( $hash, $_ );
+           if ($deliberateDisabled{$device->{identifier}} == undef) {
+               $device->{enabled} = $targetState;
+               fhem "set $device->{timerName} $target";
+               BEWAE_saveDevice($hash, $_, $device);
+           }
         }
         $hash->{STATE} = $modifier;
         return "ok in $name";

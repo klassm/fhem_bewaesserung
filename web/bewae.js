@@ -12,7 +12,7 @@ const getCsrfToken = function () {
   load = function () {
     const token = getCsrfToken();
     console.log("BEWAE - load() - token=" + token);
-    loadJsonList(bewaesserungDevice, token, function (result) {
+    loadJsonList(bewaesserungDevice, token, result => {
       const keyValuePairs = toDevices(result);
       console.log("BEWAE - devices is" + JSON.stringify(keyValuePairs));
       fillContent(keyValuePairs, token);
@@ -46,9 +46,9 @@ const getCsrfToken = function () {
       return [];
     }
     const keys = Object.keys(def);
-    return keys.filter(function (key) {
-      return key !== 'null' && key.startsWith(".");
-    }).map(function (key) {
+    return keys
+      .filter(key => key !== 'null' && key.startsWith("."))
+      .map(key => {
       try {
         const json = def[key]["VAL"];
         const device = JSON.parse(json);
@@ -90,7 +90,7 @@ const getCsrfToken = function () {
 
   submitButton = function (token) {
     const submit = $("<button>Submit</button>");
-    submit.click(function () {
+    submit.click(() => {
       const form = $('#BEWAE').find('form'),
         identifier = form.find("[name='identifier']").val(),
         deviceName = form.find("[name='deviceName']").val(),
@@ -111,13 +111,16 @@ const getCsrfToken = function () {
           after: after
         });
 
+      if (identifier.includes(" ")) {
+        alert("Identifier may not include spaces!");
+        return false;
+      }
       console.log(cmd);
       $.ajax({
         url: '?fwcsrf=' + token + '&cmd=' + cmd
-      })
-        .done(function () {
-          load();
-        });
+      }).done(() => {
+        load();
+      });
       return false;
     });
     return submit;
@@ -185,10 +188,8 @@ const getCsrfToken = function () {
     table.append(tbody);
     console.log("fillContent - device count is #" + devices.length);
     devices
-      .map(function (el) {
-        return toRow(el, token)
-      })
-      .forEach(function (el) {
+      .map(el => toRow(el, token))
+      .forEach(el => {
         tbody.append(el);
       });
     const div = $("#BEWAE");

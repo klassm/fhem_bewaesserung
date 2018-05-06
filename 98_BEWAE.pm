@@ -5,6 +5,7 @@ use JSON;
 use JSON::XS;
 use POSIX;
 use Time::HiRes qw(gettimeofday);
+use Try::Tiny;
 
 sub BEWAE_Initialize($$);
 sub BEWAE_updateReading($$);
@@ -20,7 +21,12 @@ BEWAE_getDevice($$) {
     Log 2, "get device for $identifier";
     my $saved = $hash->{READINGS}{".$identifier"}{VAL};
     Log 2, "saved is '$saved'";
-    return decode_json( $saved );
+    try {
+        return decode_json( $saved );
+    } catch {
+        Log 2,  "cannot load device, $_";
+        delete $hash->{READINGS}{".$identifier"};
+    }
 }
 
 sub

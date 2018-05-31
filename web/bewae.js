@@ -111,7 +111,7 @@ const getCsrfToken = function () {
           after: after
         });
 
-      if (!identifier.match(/[a-z0-9]+/i)) {
+      if (!identifier.match(/^[a-z0-9_]+$/i)) {
         alert("Identifier may only include plain letters and numbers.");
         return false;
       }

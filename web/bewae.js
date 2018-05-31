@@ -111,8 +111,8 @@ const getCsrfToken = function () {
           after: after
         });
 
-      if (identifier.includes(" ")) {
-        alert("Identifier may not include spaces!");
+      if (!identifier.match(/[a-z0-9]+/i)) {
+        alert("Identifier may only include plain letters and numbers.");
         return false;
       }
       console.log(cmd);

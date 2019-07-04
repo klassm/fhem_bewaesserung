@@ -20,7 +20,7 @@ const getCsrfToken = function () {
     },
     loadJsonList = function (device, token, callback) {
         console.log("BEWAE - loadJsonList()");
-        $.getJSON('?cmd=jsonlist%20' + device + '&XHR=1&&fwcsrf=' + token, function (data) {
+        $.getJSON('?cmd=jsonlist2%20' + device + '&XHR=1&&fwcsrf=' + token, function (data) {
             callback(data['Results'][0]['Readings']);
         });
     },

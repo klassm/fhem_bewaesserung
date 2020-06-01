@@ -83,7 +83,7 @@ const getCsrfToken = function () {
 
         const options = values.map(v => {
             const isSelected = v.name === value;
-            return `<option ${isSelected ? "selected" : ""} value="${v.name}">${v.alias}</option>`
+            return `<option ${isSelected ? "selected" : ""} value="${v.name}">${v.alias} (${v.name})</option>`
         }).reduce((a, b) => a + b, "");
 
         return $("<div><label for='" + key + "'>" + desc + "</label>" +

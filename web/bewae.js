@@ -29,7 +29,7 @@ const getCsrfToken = function () {
     getDevicesInRoom = function (device, token, callback) {
         console.log("BEWAE - loadDevicesInRoom()");
         $.getJSON('?cmd=jsonlist2%20room=' + bewaesserungRoom + '&XHR=1&&fwcsrf=' + token, function (data) {
-            callback(data['Results']
+            const result = data['Results']
                 .filter(device => {
                     const sets = device['PossibleSets'];
                     return sets.includes("on") && sets.includes("off");
@@ -40,7 +40,16 @@ const getCsrfToken = function () {
                         alias: device['Attributes']['alias'] || device['Name']
                     };
                 })
-                .filter(name => name.name !== bewaesserungDevice));
+                .filter(name => name.name !== bewaesserungDevice);
+
+            result.sort((a, b) => {
+                const compareA = a.alias || a.name;
+                const compareB = b.alias || b.name;
+                return compareA > compareB;
+            });
+
+            callback(result);
+
         });
     },
     toDevices = function (def) {

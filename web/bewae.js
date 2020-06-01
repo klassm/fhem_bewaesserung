@@ -45,7 +45,7 @@ const getCsrfToken = function () {
             result.sort((a, b) => {
                 const compareA = a.alias || a.name;
                 const compareB = b.alias || b.name;
-                return compareA > compareB;
+                return compareA > compareB ? 1 : -1;
             });
 
             callback(result);

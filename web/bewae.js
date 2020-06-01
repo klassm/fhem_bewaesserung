@@ -12,16 +12,18 @@ const getCsrfToken = function () {
     load = function () {
         const token = getCsrfToken();
         console.log("BEWAE - load() - token=" + token);
-        loadJsonList(bewaesserungDevice, token, result => {
-            const keyValuePairs = toDevices(result);
+        loadDeviceJson(bewaesserungDevice, token, result => {
+            bewaesserungRoom = result["Attributes"]["room"];
+
+            const keyValuePairs = toDevices(result["Readings"]);
             console.log("BEWAE - devices is" + JSON.stringify(keyValuePairs));
             fillContent(keyValuePairs, token);
-        });
+        })
     },
-    loadJsonList = function (device, token, callback) {
-        console.log("BEWAE - loadJsonList()");
+    loadDeviceJson = function(device, token, callback) {
+        console.log(`BEWAE - loadDeviceJson(device=${device})`);
         $.getJSON('?cmd=jsonlist2%20' + device + '&XHR=1&&fwcsrf=' + token, function (data) {
-            callback(data['Results'][0]['Readings']);
+            callback(data['Results'][0]);
         });
     },
     getDevicesInRoom = function (device, token, callback) {
@@ -207,8 +209,7 @@ const getCsrfToken = function () {
 
 // called by FHEM 98_BEWAE.pm
 // noinspection JSUnusedGlobalSymbols
-function bewaesserung_load_complete(device, room) {
+function bewaesserung_load_complete(device) {
     bewaesserungDevice = device;
-    bewaesserungRoom = room;
     load();
 }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euox
 
 FHEM_DIR=$1
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"

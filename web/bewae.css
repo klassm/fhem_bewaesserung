@@ -3,11 +3,14 @@ body {
 
 #BEWAE .edit {
     background-color: silver;
-    color: black;
     width: 400px;
     display: none;
     position: absolute;
     padding: 10px;
+}
+
+#BEWAE * {
+    color: black;
 }
 
 #BEWAE .edit label {

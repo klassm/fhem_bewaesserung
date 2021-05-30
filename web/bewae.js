@@ -205,7 +205,7 @@ const getCsrfToken = function () {
             });
         const div = $("#BEWAE");
         div.empty();
-        const edit = $("<div class='edit'/>");
+        const edit = $("<div class='edit ui-dialog ui-widget ui-widget-content'/>");
         edit.hide();
         div.append(edit);
         div.append(table);

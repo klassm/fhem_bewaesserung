@@ -2,15 +2,10 @@ body {
 }
 
 #BEWAE .edit {
-    background-color: silver;
     width: 400px;
     display: none;
     position: absolute;
     padding: 10px;
-}
-
-#BEWAE .edit * {
-    color: black;
 }
 
 #BEWAE .edit label {
